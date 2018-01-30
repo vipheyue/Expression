@@ -1,5 +1,7 @@
 package com.lightworld.expression
 
+import android.Manifest
+import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
@@ -8,17 +10,17 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : AppCompatActivity() {
-    private var fragmentArrayList: ArrayList<Fragment>? =  ArrayList()
+    private var fragmentArrayList: ArrayList<Fragment>? = ArrayList()
     private var currentFragment: Fragment? = null
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_home -> {
-                switchContent(fragmentArrayList!!.get(0))
+                switchContent(fragmentArrayList!![0])
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_dashboard -> {
-                switchContent(fragmentArrayList!!.get(1))
+                switchContent(fragmentArrayList!![1])
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_notifications -> {
@@ -33,20 +35,30 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
-
+        requestMiss()
         initView()
     }
 
+    private fun requestMiss() {
+        //权限处理
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {//偷懒了 哈哈 没做拒绝处理
+            val requestArray: Array<String> = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            requestPermissions(requestArray, 0)
+        }
+    }
+
+
     private fun initView() {
+
         /*第一步: 准备 数据 */
         val homeFragment = MainFragment()
         val meFragment = MeFragment()
-        fragmentArrayList!!.add(homeFragment);
-        fragmentArrayList!!.add(meFragment);
-        switchContent(fragmentArrayList!!.get(0))
+        fragmentArrayList!!.add(homeFragment)
+//        fragmentArrayList!!.add(meFragment);
+        switchContent(fragmentArrayList!![0])
     }
 
-    fun switchContent(to: Fragment) {
+    private fun switchContent(to: Fragment) {
         val fm = supportFragmentManager
         val transaction = fm.beginTransaction()
         if (currentFragment != null) {

@@ -28,3 +28,13 @@
 
 # for DexGuard only
 -keepresourcexmlelements manifest/application/meta-data@value=GlideModule
+
+-keep class com.tencent.mm.opensdk.** {
+   *;
+}
+-keep class com.tencent.wxop.** {
+   *;
+}
+-keep class com.tencent.mm.sdk.** {
+   *;
+}

@@ -1,8 +1,10 @@
 package com.lightworld.expression
 
 
+import android.app.Activity
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.view.LayoutInflater
@@ -28,7 +30,8 @@ class ExpressionFragment : Fragment() {
     private var mParam1: String? = null
     private var mParam2: String? = null
     private var mAdapter: PullToRefreshAdapter? = null
-    var dataCenter = ArrayList<String>()
+    private var dataCenter = ArrayList<String>()
+    private var showedDataCenter = ArrayList<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,54 +43,89 @@ class ExpressionFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater!!.inflate(R.layout.fragment_expression, container, false)
+        return inflater.inflate(R.layout.fragment_expression, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mSwipeRefreshLayout.setColorSchemeColors(Color.rgb(47, 223, 189))
         initAdapter()
+        mSwipeRefreshLayout.setOnRefreshListener { refresh() }
+        refresh()
+
     }
 
     private fun initAdapter() {
-
-
-//        for (i in 1..10) {
-//            dataCenter.add(ExpressionBean("http://vipheyue.oss-cn-hangzhou.aliyuncs.com/temporaryAPK/0a7fbf1780401add4f2a166a073642d6_713_50.jpg"))
-//            dataCenter.add(ExpressionBean("http://vipheyue.oss-cn-hangzhou.aliyuncs.com/temporaryAPK/5d25c3b28864d7c35eed2884ba7a9975_782_98.jpg"))
-//        }
-
-        mAdapter = PullToRefreshAdapter(R.layout.item_expression, dataCenter)
-//        mAdapter.setOnLoadMoreListener(object : BaseQuickAdapter.RequestLoadMoreListener() {
-//            fun onLoadMoreRequested() {
-//                loadMore()
-//            }
-//        })
+        mAdapter = PullToRefreshAdapter( R.layout.item_expression, showedDataCenter)
+        mAdapter!!.setOnLoadMoreListener { loadMore() }
 //        mAdapter.openLoadAnimation(BaseQuickAdapter.SLIDEIN_LEFT)
         //        mAdapter.setPreLoadNumber(3);
-        mRecyclerView.setLayoutManager(GridLayoutManager(activity, 3))
+        mRecyclerView.layoutManager = GridLayoutManager(activity, 3)
 //        mRecyclerView.addItemDecoration()
         mRecyclerView.adapter = mAdapter
+    }
+
+
+    private fun loadMore() {
+        //添加20个数据到 showedDataCenter 中
+        dataCenter.shuffle()
+        var index = 0
+        for (item: String in dataCenter) {
+            showedDataCenter.add(dataCenter[index])
+            index++
+            if (index == 20) {
+                break
+            }
+        }
+        val handler = Handler()
+        val r = Runnable {
+            mAdapter?.notifyDataSetChanged()
+            mAdapter?.loadMoreComplete()
+        }
+        handler.post(r)
+
+    }
+
+    private fun refresh() {
+        dataCenter.clear()
+        showedDataCenter.clear()
+        mSwipeRefreshLayout.isRefreshing = true
+        mAdapter?.setEnableLoadMore(false)//这里的作用是防止下拉刷新的时候还可以上拉加载
 
         //访问网络
         val jsObjRequest = JsonObjectRequest(Request.Method.GET, mParam2, null, Response.Listener { response ->
 
-            var netDataBean = Gson().fromJson<ExpressionBean>(response.toString(), ExpressionBean::class.java)
+            val netDataBean = Gson().fromJson<ExpressionBean>(response.toString(), ExpressionBean::class.java)
             for (item in netDataBean.listData) {
                 dataCenter.add(netDataBean.host + item)
             }
-            mAdapter!!.notifyDataSetChanged()
+            //添加20个数据到 showedDataCenter 中
+            dataCenter.shuffle()
+            var index = 0
+            for (item: String in dataCenter) {
+                showedDataCenter.add(dataCenter[index])
+                index++
+                if (index == 20) {
+                    break
+                }
+            }
+
+            mAdapter?.setEnableLoadMore(true)
+            mSwipeRefreshLayout?.isRefreshing = false
+            mAdapter?.notifyDataSetChanged()
+
         }, Response.ErrorListener {
             Toast.makeText(activity, "" + it.toString(), Toast.LENGTH_SHORT).show()
-
+            mAdapter?.setEnableLoadMore(true)
+            mSwipeRefreshLayout.isRefreshing = false
         })
         Volley.newRequestQueue(activity).add(jsObjRequest)
 
     }
 
     companion object {
-        private val ARG_PARAM1 = "param1"
-        private val ARG_PARAM2 = "param2"
+        private const val ARG_PARAM1 = "param1"
+        private const val ARG_PARAM2 = "param2"
         fun newInstance(param1: String, param2: String): ExpressionFragment {
             val fragment = ExpressionFragment()
             val args = Bundle()

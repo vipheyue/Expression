@@ -30,28 +30,32 @@ class MainFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater!!.inflate(R.layout.fragment_main, container, false)
+        return inflater.inflate(R.layout.fragment_main, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        someTest()
+        requestMainJson()
+
+
     }
 
-    private fun someTest() {
+
+
+    private fun requestMainJson() {
         val url = "http://heyue.oss-cn-hangzhou.aliyuncs.com/AppData/expression/main.json"
 
         val jsObjRequest = JsonObjectRequest(Request.Method.GET, url, null, Response.Listener { response ->
 
-            var mainDataBean = Gson().fromJson<MainBean>(response.toString(), MainBean::class.java)
-            var data = mainDataBean.data
+            val mainDataBean = Gson().fromJson<MainBean>(response.toString(), MainBean::class.java)
+            val data = mainDataBean.data
 
             for (item in data) {
                 mTitles.add(item.title)
                 mFragments.add(ExpressionFragment.newInstance(item.title, item.url))
             }
             mAdapter = MyPagerAdapter(activity!!.supportFragmentManager)
-            vp.setAdapter(mAdapter)
+            vp.adapter = mAdapter
             tl_9.setViewPager(vp)
             vp.currentItem = 1
 
