@@ -7,7 +7,7 @@
     tools:context="com.lightworld.expression.MainFragment">
 
     <com.flyco.tablayout.SlidingTabLayout
-        android:id="@+id/tl_9"
+        android:id="@+id/slide_tab_layout"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="@color/colorPrimary"

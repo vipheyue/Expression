@@ -19,8 +19,8 @@ android {
         applicationId "com.lightworld.expression"
         minSdkVersion 15
         targetSdkVersion 27
-        versionCode 2
-        versionName "1.1"
+        versionCode 3
+        versionName "1.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         signingConfig signingConfigs.vipheyue
@@ -60,6 +60,5 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.2'
     implementation files('libs/open_sdk_r5990_lite.jar')
     compile 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'
-    compile 'com.tencent.bugly:crashreport:latest.release'
-    //其中latest.release指代最新Bugly SDK版本号，也可以指定明确的版本号，例如2.2.0
+    compile 'com.tencent.bugly:crashreport_upgrade:latest.release'//其中latest.release指代最新版本号，也可以指定明确的版本号，例如1.2.0
 }

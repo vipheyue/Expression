@@ -45,7 +45,8 @@ class PullToRefreshAdapter(layoutResId: Int, data: List<String>?) : BaseQuickAda
                     .load(itemUrl)
                     .into(object : SimpleTarget<Bitmap>() {
                         override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                            ShareUtils.share2WX(view.context as Activity, resource)
+                            val wxBitmap = resource.copy(resource.getConfig(), true)
+                            ShareUtils.share2WX(view.context as Activity, wxBitmap)
                         }
                     })
 
@@ -63,15 +64,10 @@ class PullToRefreshAdapter(layoutResId: Int, data: List<String>?) : BaseQuickAda
                                 }
                                 ShareUtils.share2QQ(view.context as Activity, path.await())
                             }
-
                         }
                     })
         }
     }
-
-
-
-
 
 
 }

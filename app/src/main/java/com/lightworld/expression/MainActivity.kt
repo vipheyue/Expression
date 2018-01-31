@@ -1,10 +1,12 @@
 package com.lightworld.expression
 
 import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -35,17 +37,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
-        requestMiss()
         initView()
     }
 
-    private fun requestMiss() {
-        //权限处理
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {//偷懒了 哈哈 没做拒绝处理
-            val requestArray: Array<String> = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            requestPermissions(requestArray, 0)
-        }
-    }
+
 
 
     private fun initView() {

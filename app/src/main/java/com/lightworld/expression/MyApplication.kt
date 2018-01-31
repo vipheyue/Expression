@@ -1,7 +1,7 @@
 package com.lightworld.expression
 
 import android.app.Application
-import com.tencent.bugly.crashreport.CrashReport
+import com.tencent.bugly.Bugly
 
 
 /**
@@ -12,7 +12,7 @@ class MyApplication : Application() {
     override fun onCreate() {
         INSTANCE = this
         super.onCreate()
-        CrashReport.initCrashReport(applicationContext, "5719048f8a", false);
+        Bugly.init(getApplicationContext(), "5719048f8a", false);
     }
     companion object {
         private lateinit var INSTANCE: MyApplication

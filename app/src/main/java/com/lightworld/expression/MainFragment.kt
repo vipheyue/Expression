@@ -41,32 +41,31 @@ class MainFragment : Fragment() {
     }
 
 
-
     private fun requestMainJson() {
         val url = "http://heyue.oss-cn-hangzhou.aliyuncs.com/AppData/expression/main.json"
-
         val jsObjRequest = JsonObjectRequest(Request.Method.GET, url, null, Response.Listener { response ->
-
-            val mainDataBean = Gson().fromJson<MainBean>(response.toString(), MainBean::class.java)
-            val data = mainDataBean.data
-
-            for (item in data) {
-                mTitles.add(item.title)
-                mFragments.add(ExpressionFragment.newInstance(item.title, item.url))
-            }
-            mAdapter = MyPagerAdapter(activity!!.supportFragmentManager)
-            vp.adapter = mAdapter
-            tl_9.setViewPager(vp)
-            vp.currentItem = 1
-
-
+            dealData(response.toString())
         }, Response.ErrorListener {
             Toast.makeText(activity, "" + it.toString(), Toast.LENGTH_SHORT).show()
-
+            val open = activity!!.assets.open("main.json")
+            val readString = ReadAssetsJsonUtils.read(open)
+            dealData(readString)
         })
-
-// Access the RequestQueue through your singleton class.
         Volley.newRequestQueue(activity).add(jsObjRequest)
+    }
+
+    private fun dealData(json: String) {
+        val mainDataBean = Gson().fromJson<MainBean>(json, MainBean::class.java)
+        val data = mainDataBean.data
+
+        for (item in data) {
+            mTitles.add(item.title)
+            mFragments.add(ExpressionFragment.newInstance(item.title, item.url))
+        }
+        mAdapter = activity?.supportFragmentManager?.let { MyPagerAdapter(it) }
+        vp.adapter = mAdapter
+        slide_tab_layout.setViewPager(vp)
+        vp.currentItem = 1
     }
 
     private inner class MyPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {

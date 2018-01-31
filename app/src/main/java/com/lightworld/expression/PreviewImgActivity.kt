@@ -1,10 +1,14 @@
 package com.lightworld.expression
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import com.bumptech.glide.Glide
@@ -38,7 +42,7 @@ class PreviewImgActivity : AppCompatActivity() {
 
 
         val url = intent.getStringExtra("url")
-        Glide.with(this)
+        Glide.with(MyApplication.get())
                 .load(url)
                 .into(imageView)
         imageView.setOnClickListener { finish() }
@@ -48,7 +52,8 @@ class PreviewImgActivity : AppCompatActivity() {
                     .load(url)
                     .into(object : SimpleTarget<Bitmap>() {
                         override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                            ShareUtils.share2WX(this@PreviewImgActivity, resource)
+                            val wxBitmap = resource.copy(resource.getConfig(), true)
+                            ShareUtils.share2WX(this@PreviewImgActivity, wxBitmap)
                         }
                     })
         }
@@ -71,26 +76,39 @@ class PreviewImgActivity : AppCompatActivity() {
                     })
         }
         fab_down.setOnClickListener {
-            val target = Glide.with(this)
-                    .asBitmap()
-                    .load(url)
-                    .into(object : SimpleTarget<Bitmap>() {
-                        override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                            val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-                            val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), timeStamp + ".png")
-                            async(UI) {
-                                val path: Deferred<String> = bg {
-                                    BitmapUtils.BitmapToFile(resource, file)
-                                }
-                                galleryAddPic(file.absolutePath)
-                                Toast.makeText(this@PreviewImgActivity, "保存成功", Toast.LENGTH_SHORT).show()
-                                finish()
-                            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    downPic(url)
+                } else {
+                    val requestArray: Array<String> = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    requestPermissions(requestArray, 0)
+                }
 
-                        }
-                    })
+            }
+
 
         }
+    }
+
+    private fun downPic(url: String?) {
+        val target = Glide.with(this)
+                .asBitmap()
+                .load(url)
+                .into(object : SimpleTarget<Bitmap>() {
+                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+                        val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), timeStamp + ".png")
+                        async(UI) {
+                            val path: Deferred<String> = bg {
+                                BitmapUtils.BitmapToFile(resource, file)
+                            }
+                            galleryAddPic(file.absolutePath)
+                            Toast.makeText(this@PreviewImgActivity, "保存成功", Toast.LENGTH_SHORT).show()
+                            finish()
+                        }
+
+                    }
+                })
     }
 
     private fun galleryAddPic(path: String) {
