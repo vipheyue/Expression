@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
@@ -59,21 +60,15 @@ class PreviewImgActivity : AppCompatActivity() {
         }
 
         fab_qq.setOnClickListener {
-            val target = Glide.with(this)
-                    .asBitmap()
-                    .load(url)
-                    .into(object : SimpleTarget<Bitmap>() {
-                        override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                            val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "tempShare.png")
-                            async(UI) {
-                                val path: Deferred<String> = bg {
-                                    BitmapUtils.BitmapToFile(resource, file)
-                                }
-                                ShareUtils.share2QQ(this@PreviewImgActivity, path.await())
-                            }
-
-                        }
-                    })
+            //TODO 写权限
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    dealQQShare(url)
+                } else {
+                    val requestArray: Array<String> = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    ActivityCompat.requestPermissions(this, requestArray, 0)
+                }
+            }
         }
         fab_down.setOnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -83,11 +78,28 @@ class PreviewImgActivity : AppCompatActivity() {
                     val requestArray: Array<String> = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     requestPermissions(requestArray, 0)
                 }
-
             }
 
 
         }
+    }
+
+    private fun dealQQShare(url: String?) {
+        val target = Glide.with(this)
+                .asBitmap()
+                .load(url)
+                .into(object : SimpleTarget<Bitmap>() {
+                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                        val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "tempShare.png")
+                        async(UI) {
+                            val path: Deferred<String> = bg {
+                                BitmapUtils.BitmapToFile(resource, file)
+                            }
+                            ShareUtils.share2QQ(this@PreviewImgActivity, path.await())
+                        }
+
+                    }
+                })
     }
 
     private fun downPic(url: String?) {

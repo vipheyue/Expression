@@ -1,6 +1,7 @@
 package com.lightworld.expression
 
 
+import android.app.Activity
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
@@ -55,7 +56,7 @@ class ExpressionFragment : Fragment() {
     }
 
     private fun initAdapter() {
-        mAdapter = PullToRefreshAdapter( R.layout.item_expression, showedDataCenter)
+        mAdapter = PullToRefreshAdapter(activity as Activity, R.layout.item_expression, showedDataCenter)
         mAdapter!!.setOnLoadMoreListener { loadMore() }
 //        mAdapter.openLoadAnimation(BaseQuickAdapter.SLIDEIN_LEFT)
         //        mAdapter.setPreLoadNumber(3);
@@ -86,14 +87,14 @@ class ExpressionFragment : Fragment() {
     }
 
     private fun refresh() {
-        dataCenter.clear()
-        showedDataCenter.clear()
+
         mSwipeRefreshLayout.isRefreshing = true
         mAdapter?.setEnableLoadMore(false)//这里的作用是防止下拉刷新的时候还可以上拉加载
 
         //访问网络
         val jsObjRequest = JsonObjectRequest(Request.Method.GET, mParam2, null, Response.Listener { response ->
-
+            dataCenter.clear()
+            showedDataCenter.clear()
             val netDataBean = Gson().fromJson<ExpressionBean>(response.toString(), ExpressionBean::class.java)
             for (item in netDataBean.listData) {
                 dataCenter.add(netDataBean.host + item)
