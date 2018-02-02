@@ -1,15 +1,11 @@
 package com.lightworld.expression
 
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Environment
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
+import android.support.v4.content.FileProvider
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import com.bumptech.glide.Glide
@@ -60,28 +56,41 @@ class PreviewImgActivity : AppCompatActivity() {
         }
 
         fab_qq.setOnClickListener {
-            //TODO 写权限
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    dealQQShare(url)
-                } else {
-                    val requestArray: Array<String> = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    ActivityCompat.requestPermissions(this, requestArray, 0)
-                }
-            }
+            dealQQShare(url)
+        }
+        fab_share_expression.setOnClickListener {
+
+
+            val target = Glide.with(this)
+                    .asBitmap()
+                    .load(url)
+                    .into(object : SimpleTarget<Bitmap>() {
+                        override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                            val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "tempShare.png")
+                            async(UI) {
+                                val path: Deferred<String> = bg {
+                                    BitmapUtils.BitmapToFile(resource, file)
+                                }
+                                val imageUri = FileProvider.getUriForFile(this@PreviewImgActivity, "com.lightworld.expression.fileprovider", file)
+                                var shareIntent: Intent = Intent();
+                                shareIntent.setAction(Intent.ACTION_SEND);
+                                shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
+                                shareIntent.setType("image/*");
+                                startActivity(Intent.createChooser(shareIntent, "分享图片"))
+                            }
+                        }
+                    })
         }
         fab_down.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    downPic(url)
-                } else {
-                    val requestArray: Array<String> = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    requestPermissions(requestArray, 0)
-                }
-            }
-
-
+            downPic(url)
         }
+        fab_share_app.setOnClickListener {
+            var textIntent = Intent(Intent.ACTION_SEND)
+            textIntent.setType("text/plain");
+            textIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_content))
+            startActivity(Intent.createChooser(textIntent, getString(R.string.app_name)))
+        }
+
     }
 
     private fun dealQQShare(url: String?) {

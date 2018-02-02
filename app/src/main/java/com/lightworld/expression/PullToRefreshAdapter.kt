@@ -1,14 +1,9 @@
 package com.lightworld.expression
 
-import android.Manifest
 import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.os.Build
 import android.os.Environment
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -61,16 +56,7 @@ class PullToRefreshAdapter : BaseQuickAdapter<String, BaseViewHolder> {
 
         }
         helper.getView<ImageView>(R.id.iv_qq).setOnClickListener {
-            //TODO 写权限
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (ContextCompat.checkSelfPermission(view.context as Activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    dealQQShare(view, itemUrl)
-                } else {
-                    val requestArray: Array<String> = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    ActivityCompat.requestPermissions(mActivity, requestArray, 0)
-                }
-            }
-
+            dealQQShare(view, itemUrl)
         }
     }
 

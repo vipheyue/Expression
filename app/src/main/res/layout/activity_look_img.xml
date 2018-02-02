@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.lightworld.expression.PreviewImgActivity">
+    tools:context="com.lightworld.expression.PreviewImgActivity"
+    tools:layout_editor_absoluteY="81dp">
 
     <ImageView
         android:id="@+id/imageView"
@@ -14,7 +15,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/fab_qq"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -25,25 +26,23 @@
         android:id="@+id/fab_down"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/fab_share_expression"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/fab_qq"
+        app:layout_constraintStart_toEndOf="@+id/fab_share_expression"
+        app:layout_constraintTop_toTopOf="@+id/fab_share_expression"
         app:srcCompat="@mipmap/loading" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_wx"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:clickable="true"
-        app:layout_constraintBottom_toBottomOf="@+id/fab_qq"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/fab_qq"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/fab_qq"
         app:srcCompat="@mipmap/ssdk_oks_classic_wechat" />
 
     <android.support.design.widget.FloatingActionButton
@@ -51,10 +50,34 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
-        app:layout_constraintBottom_toBottomOf="@+id/fab_down"
-        app:layout_constraintEnd_toStartOf="@+id/fab_down"
+        app:layout_constraintBottom_toBottomOf="@+id/fab_wx"
+        app:layout_constraintEnd_toStartOf="@+id/fab_share_expression"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/fab_wx"
-        app:layout_constraintTop_toTopOf="@+id/fab_down"
+        app:layout_constraintTop_toTopOf="@+id/fab_wx"
         app:srcCompat="@mipmap/ssdk_oks_classic_qq" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_share_expression"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:layout_constraintBottom_toBottomOf="@+id/fab_qq"
+        app:layout_constraintEnd_toStartOf="@+id/fab_down"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/fab_qq"
+        app:layout_constraintTop_toTopOf="@+id/fab_qq"
+        app:srcCompat="@android:drawable/ic_menu_share" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_share_app"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:clickable="true"
+        app:layout_constraintBottom_toTopOf="@+id/fab_down"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_share"
+        android:layout_marginRight="8dp" />
 </android.support.constraint.ConstraintLayout>

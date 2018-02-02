@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
+import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
@@ -41,8 +42,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
-
     private fun initView() {
 
         /*第一步: 准备 数据 */
@@ -51,6 +50,16 @@ class MainActivity : AppCompatActivity() {
         fragmentArrayList!!.add(homeFragment)
 //        fragmentArrayList!!.add(meFragment);
         switchContent(fragmentArrayList!![0])
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                val requestArray: Array<String> = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                ActivityCompat.requestPermissions(this, requestArray, 0)
+            }
+        }
     }
 
     private fun switchContent(to: Fragment) {

@@ -63,7 +63,7 @@ class MainFragment : Fragment() {
             mFragments.add(ExpressionFragment.newInstance(item.title, item.url))
         }
         mAdapter = activity?.supportFragmentManager?.let { MyPagerAdapter(it) }
-        vp.adapter = mAdapter
+        vp?.adapter = mAdapter
         slide_tab_layout.setViewPager(vp)
         vp.currentItem = 1
     }
