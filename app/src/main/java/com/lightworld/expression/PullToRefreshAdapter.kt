@@ -49,7 +49,8 @@ class PullToRefreshAdapter : BaseQuickAdapter<String, BaseViewHolder> {
                     .load(itemUrl)
                     .into(object : SimpleTarget<Bitmap>() {
                         override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                            val wxBitmap = resource.copy(resource.getConfig(), true)
+//                            val wxBitmap = resource?.copy(resource?.getConfig(), true)
+                            val wxBitmap = Bitmap.createBitmap(resource)
                             ShareUtils.share2WX(mActivity, wxBitmap)
                         }
                     })

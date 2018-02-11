@@ -10,7 +10,6 @@ import android.support.v7.widget.GridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
@@ -115,7 +114,7 @@ class ExpressionFragment : Fragment() {
             mAdapter?.notifyDataSetChanged()
 
         }, Response.ErrorListener {
-            Toast.makeText(activity, "" + it.toString(), Toast.LENGTH_SHORT).show()
+//            Toast.makeText(activity, "" + it.toString(), Toast.LENGTH_SHORT).show()
             mAdapter?.setEnableLoadMore(true)
             mSwipeRefreshLayout.isRefreshing = false
         })
